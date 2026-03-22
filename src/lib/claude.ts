@@ -1,4 +1,6 @@
+import { MOCK_SCORES, MOCK_DESCRIPTION, mockDelay } from "./mockData";
 const ANTHROPIC_API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY as string;
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === "true";
 const API_URL = "https://api.anthropic.com/v1/messages";
 const MODEL = "claude-sonnet-4-6";
 
@@ -28,6 +30,16 @@ export async function callClaude({
   messages,
   maxTokens = 1000,
 }: ClaudeOptions): Promise<string> {
+
+  // --- MOCK MODE ---
+  if (USE_MOCK) {
+    await mockDelay(900);
+    if (system.includes("score") || system.includes("evaluate")) {
+        return JSON.stringify(MOCK_SCORES.slice(0, 10));
+    }
+    return MOCK_DESCRIPTION;
+  }
+  // --- END MOCK MODE ---
   const response = await fetch(API_URL, {
     method: "POST",
     headers: {

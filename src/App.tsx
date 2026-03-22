@@ -77,6 +77,11 @@ export default function App() {
               <span className="text-xs text-gray-400 font-normal hidden sm:inline">
                 Austin listing tool
               </span>
+              {import.meta.env.VITE_USE_MOCK === "true" && (
+                <span className="text-xs bg-amber-100 text-amber-700 font-medium px-2 py-0.5 rounded-full">
+                  Mock mode
+                </span>
+              )}
             </div>
             {photos.length > 0 && (
               <button
