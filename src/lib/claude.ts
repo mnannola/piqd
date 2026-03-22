@@ -1,6 +1,6 @@
 const ANTHROPIC_API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY as string;
 const API_URL = "https://api.anthropic.com/v1/messages";
-const MODEL = "claude-sonnet-4-6-20260218";
+const MODEL = "claude-sonnet-4-6";
 
 export interface MessageContent {
   type: "text" | "image";
