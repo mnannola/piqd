@@ -11,7 +11,13 @@ interface PhotoGridProps {
 
 export default function PhotoGrid({ photos, scores, selectedIds, onToggle }: PhotoGridProps) {
   const scoreMap = new Map(scores.map((s) => [photos[s.index]?.id, s]));
-  const selected = photos.filter((p) => selectedIds.has(p.id));
+  const selected = photos
+    .filter((p) => selectedIds.has(p.id))
+    .sort((a,b) => {
+        const scoreA = scoreMap.get(a.id)?.score ?? 0;
+        const scoreB = scoreMap.get(b.id)?.score ?? 0;
+        return scoreB - scoreA;
+    });
   const excluded = photos.filter((p) => !selectedIds.has(p.id));
   const avgScore = scores.length
     ? (scores.reduce((a, b) => a + b.score, 0) / scores.length).toFixed(1)
