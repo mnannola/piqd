@@ -1,4 +1,5 @@
 import { useRef, useState, type DragEvent, type ChangeEvent } from "react";
+import { prepareImage } from "../lib/imageUtils";
 
 export interface UploadedPhoto {
   id: string;
@@ -13,24 +14,12 @@ interface PhotoUploaderProps {
   disabled?: boolean;
 }
 
-function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      resolve(result.split(",")[1]);
-    };
-    reader.onerror = () => reject(new Error("Failed to read file"));
-    reader.readAsDataURL(file);
-  });
-}
-
 function generateId(): string {
   return Math.random().toString(36).substring(2, 10);
 }
 
 const ACCEPTED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-const MAX_PHOTOS = 50;
+const MAX_PHOTOS = 75;
 
 export default function PhotoUploader({ onPhotosLoaded, disabled }: PhotoUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
@@ -56,7 +45,7 @@ export default function PhotoUploader({ onPhotosLoaded, disabled }: PhotoUploade
     try {
       const photos: UploadedPhoto[] = await Promise.all(
         validFiles.map(async (file) => {
-          const base64 = await fileToBase64(file);
+          const base64 = await prepareImage(file);
           const previewUrl = URL.createObjectURL(file);
           return { id: generateId(), file, base64, previewUrl, name: file.name };
         })
