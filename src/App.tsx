@@ -4,6 +4,7 @@ import PhotoGrid from "./components/PhotoGrid";
 import DescriptionPanel from "./components/DescriptionPanel";
 import { usePhotoScoring } from "./hooks/usePhotoScoring";
 import { saveOverride } from "./lib/storage";
+import { isCompressionEnabled } from "./lib/imageUtils";
 
 type Tab = "upload" | "photos" | "description";
 
@@ -66,20 +67,26 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             <div className="flex items-center gap-2">
               <span className="text-xl">🏠</span>
-              <span className="font-bold text-gray-900 text-lg tracking-tight">Piqd</span>
+              <span className="font-bold text-gray-900 text-lg tracking-tight">
+                Piqd
+              </span>
               <span className="text-xs text-gray-400 font-normal hidden sm:inline">
                 Austin listing tool
               </span>
               {import.meta.env.VITE_USE_MOCK === "true" && (
                 <span className="text-xs bg-amber-100 text-amber-700 font-medium px-2 py-0.5 rounded-full">
                   Mock mode
+                </span>
+              )}
+              {isCompressionEnabled() && (
+                <span className="text-xs bg-green-100 text-green-700 font-medium px-2 py-0.5 rounded-full">
+                  Compression on
                 </span>
               )}
             </div>
@@ -102,18 +109,21 @@ export default function App() {
                 disabled={t.id !== "upload" && photos.length === 0}
                 className={`
                   flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors
-                  ${tab === t.id
-                    ? "border-violet-600 text-violet-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed"
+                  ${
+                    tab === t.id
+                      ? "border-violet-600 text-violet-600"
+                      : "border-transparent text-gray-500 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed"
                   }
                 `}
               >
                 {t.label}
                 {t.count !== undefined && t.count > 0 && (
-                  <span className={`
+                  <span
+                    className={`
                     text-xs px-1.5 py-0.5 rounded-full font-medium
                     ${tab === t.id ? "bg-violet-100 text-violet-600" : "bg-gray-100 text-gray-500"}
-                  `}>
+                  `}
+                  >
                     {t.count}
                   </span>
                 )}
@@ -125,7 +135,6 @@ export default function App() {
 
       {/* Main content */}
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-
         {/* Upload tab */}
         {tab === "upload" && (
           <div className="max-w-xl mx-auto">
@@ -134,7 +143,8 @@ export default function App() {
                 Upload listing photos
               </h1>
               <p className="text-gray-500 text-sm">
-                Piqd will score each photo and automatically select the best ones for your listing.
+                Piqd will score each photo and automatically select the best
+                ones for your listing.
               </p>
             </div>
             <PhotoUploader onPhotosLoaded={handlePhotosLoaded} />
@@ -146,7 +156,9 @@ export default function App() {
           <div>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Photo selection</h1>
+                <h1 className="text-xl font-bold text-gray-900">
+                  Photo selection
+                </h1>
                 <p className="text-sm text-gray-500 mt-0.5">
                   Click any photo to include or exclude it from your listing.
                 </p>
@@ -164,9 +176,24 @@ export default function App() {
             {/* Scoring status */}
             {isScoring && (
               <div className="mb-4 flex items-center gap-2 text-sm text-violet-600 bg-violet-50 border border-violet-200 rounded-lg px-4 py-3">
-                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                <svg
+                  className="animate-spin w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8z"
+                  />
                 </svg>
                 Scoring photos with AI — results appear as they arrive...
               </div>
@@ -191,15 +218,18 @@ export default function App() {
         {tab === "description" && (
           <div>
             <div className="mb-6">
-              <h1 className="text-xl font-bold text-gray-900">Generate description</h1>
+              <h1 className="text-xl font-bold text-gray-900">
+                Generate description
+              </h1>
               <p className="text-sm text-gray-500 mt-0.5">
-                Claude will write a listing description based on your {selectedPhotos.length} selected photo{selectedPhotos.length !== 1 ? "s" : ""}.
+                Claude will write a listing description based on your{" "}
+                {selectedPhotos.length} selected photo
+                {selectedPhotos.length !== 1 ? "s" : ""}.
               </p>
             </div>
             <DescriptionPanel selectedPhotos={selectedPhotos} />
           </div>
         )}
-
       </main>
     </div>
   );
